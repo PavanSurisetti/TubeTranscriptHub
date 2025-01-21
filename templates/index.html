@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Transcription</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input { width: 60%; padding: 10px; margin: 10px; }
+        button { padding: 10px 20px; background-color: blue; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: darkblue; }
+        #transcription { margin-top: 20px; padding: 10px; border: 1px solid #ccc; width: 80%; margin-left: auto; margin-right: auto; text-align: left; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>YouTube Video Transcription</h1>
+    <p>Enter a YouTube video link to generate its transcription</p>
+    <input type="text" id="youtubeLink" placeholder="Enter YouTube Video URL">
+    <button onclick="getTranscription()">Generate Transcription</button>
+    <div id="transcription"></div>
+
+    <script>
+        function getTranscription() {
+            let videoUrl = document.getElementById("youtubeLink").value.trim();
+            if (!videoUrl) {
+                alert("Please enter a valid YouTube URL");
+                return;
+            }
+
+            fetch('/transcribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: videoUrl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let transcriptionDiv = document.getElementById("transcription");
+                if (data.transcription) {
+                    transcriptionDiv.innerText = data.transcription;
+                } else {
+                    alert(data.error || "Error fetching transcription.");
+                    transcriptionDiv.innerText = "";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Failed to get transcription. Try again.");
+            });
+        }
+    </script>
+</body>
+</html>
